@@ -1,0 +1,23 @@
+<% title = 'Recipe Finder' %>
+
+<div class="container">
+  <h1>Log in to User Account</h1>
+  <p>
+    Hello User,<br>
+    This site operates with a limited database. <br>
+    If no user account is found for the provided credentials  <br>
+    your account may have been deleted and a new account should be made. <br>
+    Apologies for any inconvenience. 
+  </p>
+  <form action="/login" method="post">
+    <input type="username" name="userName" placeholder="username" required>
+    <input type="password" name="password" placeholder="password" required>
+    <button type="submit" class="button">Log In</button>
+  </form>
+
+  <% if (error) { %>
+    <p class="error"><%= error %></p>
+  <% } %>
+
+  <a href="/" class="button">Home</a>
+</div>

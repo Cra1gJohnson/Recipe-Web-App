@@ -2,13 +2,17 @@ const express = require('express');
 const axios = require('axios');
 const Favorite = require('../models/favorite');
 const router = express.Router();
+const bcrypt = require('bcrypt');
+const User = require('../models/user')
 
 const API_KEY = process.env.RECIPE_API_KEY;
 
+// this is displaying the base welcome page index
 router.get('/', async (req, res) => {
   res.render('index', { recipes: null });
 });
 
+// this displays the result of a search
 router.post('/search', async (req, res) => {
   const ingredients = req.body.ingredients;
   const url = `https://www.themealdb.com/api/json/v1/1/filter.php?i=${encodeURIComponent(ingredients)}`;
@@ -19,6 +23,8 @@ router.post('/search', async (req, res) => {
 
 });
 
+// this renders a recipes details by getting more info from the api
+// using their search by id function
 router.get('/search/:id', async(req, res) => {
   const mongoId = req.params.id;
   try {
@@ -34,15 +40,26 @@ router.get('/search/:id', async(req, res) => {
   }
 });
 
+// this renders the favorites page and passes a sorted list of recipes
 router.get('/favorites', async (req, res) => {
-  const favorites = await Favorite.find().sort('-addedAt');
+  const favorites = await Favorite.find({user: req.session.user.id}).lean();
   res.render('favorites', { favorites, title: 'My Favorite Recipes' });
 });
 
+// this adds a favorited recipe to a users list
 router.post('/favorites', async (req, res) => {
   try {
-    const {id, title, image} = req.body
-    await Favorite.create({ recipeId: id, title, image });
+    const user = req.session.user.id;
+    const {recipeId, title, image} = req.body
+    
+    console.log({user, recipeId, title, image });
+    
+  await Favorite.findOneAndUpdate(
+    { user: user, recipeId },             // find existing favorite
+    { user: user, recipeId, title, image }, // update these fields
+    { upsert: true, new: true, setDefaultsOnInsert: true }
+  );
+
     res.status(200).json({success: true})
   } catch (e) {
     console.error(e)
@@ -79,5 +96,8 @@ router.get('/favoritesRemoval', async (req, res) => {
   await Favorite.deleteMany({});
   res.redirect('/favorites');
 });
+
+
+
 
 module.exports = router;

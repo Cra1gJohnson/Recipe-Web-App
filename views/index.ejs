@@ -2,12 +2,25 @@
 
 <div class="container">
   <h1>Search Recipes by an Ingredient</h1>
+  <% if (currentUser) { %>
+    <h4>Current User: <%= currentUser.userName %></h4>
+      <a href="/favorites" class="button">Favorites</a>
+      <a href="/logOut" class="button">Log Out</a>
+      
+  <% } else { %>
+    <p> 
+      Welcome Guest User,<br>
+      Feel free to search and view recipes. <br>
+      Create an account to favorite recipes and revist them easily. 
+    </p>
+    <a href="/logIn" class="button">Log in</a>
+    <a href="/register" class="button">Sign up</a>
+  <% } %>
+
   <form action="/search" method="post">
     <input type="text" name="ingredients" placeholder="e.g. chicken, rice" required>
     <button type="submit">Find</button>
   </form>
-
-  <a href="/favorites" class="button">Favorites</a>
 
   <% if (recipes != 0 && recipes != null) { %>
     <ul class="recipes">
@@ -17,13 +30,14 @@
           <img src="<%= r.strMealThumb %>" alt="<%= r.strMeal %>">
           <h3><%= r.strMeal %></h3>
           </a>
-
-          <form class="favorite-form">
-            <input type="hidden" name="id" value="<%= r.idMeal %>">
-            <input type="hidden" name="title" value="<%= r.strMeal %>">
-            <input type="hidden" name="image" value="<%= r.strMealThumb %>">
-            <button type="submit">♥ Favorite</button>
-          </form>
+          <% if (currentUser) { %>
+            <form class="favorite-form">
+              <input type="hidden" name="recipeId" value="<%= r.idMeal %>">
+              <input type="hidden" name="title" value="<%= r.strMeal %>">
+              <input type="hidden" name="image" value="<%= r.strMealThumb %>">
+              <button type="submit">♥ Favorite</button>
+            </form>
+          <% } %>
         </li>
       <% }) %>
     </ul>
@@ -36,12 +50,12 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.favorite-form').forEach(form => {
     form.addEventListener('submit', async (e) => {
       e.preventDefault(); // Stop full-page reload
-
+      
       if (!confirm("Add this recipe to favorites?")) return;
-
+      
       const formData = new FormData(form);
       const body = Object.fromEntries(formData.entries());
-      console.log(body);
+      
       try {
         const res = await fetch('/favorites', {
           method: 'POST',

@@ -1,0 +1,21 @@
+<% title = 'Recipe Finder' %>
+
+<div class="container">
+  <h1>Create User Account</h1>
+  <p>
+    Hello Prospective User,<br>
+    This site operates with a limited database. <br>
+    We remove accounts by age of last use to keep our storage small. <br>
+    Apologies for any inconvenience. 
+  </p>
+  <form action="/register" method="post">
+    <input type="username" name="userName" placeholder="username" required>
+    <input type="password" name="password" placeholder="password" required>
+    <button type="submit" class="button">Register</button>
+  </form>
+  <% if (error) { %>
+    <p class="error"><%= error %></p>
+  <% } %>
+  
+  <a href="/" class="button">Home</a>
+</div>

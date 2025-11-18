@@ -17,12 +17,14 @@
   <% if (meal.strYoutube) { %>
     <p><a href="<%= meal.strYoutube %>" target="_blank">Watch on YouTube</a></p>
   <% } %>
-  <form class="favorite-form">
-    <input type="hidden" name="id" value="<%= meal.idMeal %>">
-    <input type="hidden" name="title" value="<%= meal.strMeal %>">
-    <input type="hidden" name="image" value="<%= meal.strMealThumb %>">
-    <button type="submit">♥ Favorite</button>
-  </form>
+  <% if (currentUser) { %>
+    <form class="favorite-form">
+      <input type="hidden" name="recipeId" value="<%= meal.idMeal %>">
+      <input type="hidden" name="title" value="<%= meal.strMeal %>">
+      <input type="hidden" name="image" value="<%= meal.strMealThumb %>">
+      <button type="submit">♥ Favorite</button>
+    </form>
+  <% } %>
   <hr>
   <a href="/">Back to Home</a>
 </div>
